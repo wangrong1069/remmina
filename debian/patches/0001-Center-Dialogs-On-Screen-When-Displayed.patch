@@ -1,0 +1,365 @@
+Index: remmina/src/rcw.c
+===================================================================
+--- remmina.orig/src/rcw.c
++++ remmina/src/rcw.c
+@@ -671,6 +671,7 @@ gboolean rcw_delete(RemminaConnectionWin
+ 			dialog = gtk_message_dialog_new(GTK_WINDOW(cnnwin), GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION,
+ 							GTK_BUTTONS_YES_NO,
+ 							_("Are you sure you want to close %i active connections in the current window?"), nopen);
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 			i = gtk_dialog_run(GTK_DIALOG(dialog));
+ 			gtk_widget_destroy(dialog);
+ 			if (i != GTK_RESPONSE_YES)
+@@ -682,6 +683,7 @@ gboolean rcw_delete(RemminaConnectionWin
+ 								GTK_BUTTONS_YES_NO,
+ 								_("Are you sure you want to close this last active connection?"));
+ 				i = gtk_dialog_run(GTK_DIALOG(dialog));
++				gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 				gtk_widget_destroy(dialog);
+ 				if (i != GTK_RESPONSE_YES)
+ 					return FALSE;
+@@ -2210,6 +2212,7 @@ static void rcw_toolbar_screenshot(GtkTo
+ 		    get_current_allowed_scale_mode(cnnobj, NULL, NULL) == REMMINA_PROTOCOL_WIDGET_SCALE_MODE_SCALED) {
+ 			dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK,
+ 							_("Turn off scaling to avoid screenshot distortion."));
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 			g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 			gtk_widget_show(dialog);
+ 		}
+@@ -4435,6 +4438,7 @@ gboolean rcw_open_from_filename(const gc
+ 	} else {
+ 		dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+ 						_("The file “%s” is corrupted, unreadable, or could not be found."), filename);
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 		gtk_widget_show(dialog);
+ 		remmina_widget_pool_register(dialog);
+@@ -4553,6 +4557,7 @@ GtkWidget *rcw_open_from_file_full(Remmi
+ 		msg = remmina_protocol_widget_get_error_message((RemminaProtocolWidget *)cnnobj->proto);
+ 		dialog = gtk_message_dialog_new(wparent, GTK_DIALOG_DESTROY_WITH_PARENT,
+ 						GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", msg);
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(dialog));
+ 		gtk_widget_destroy(dialog);
+ 		/* We should destroy cnnobj->proto and cnnobj now… TODO: Fix this leak */
+@@ -4674,7 +4679,7 @@ GtkWidget *rcw_open_from_file_full(Remmi
+ 							 err_msg);
+ 		gtk_dialog_add_button(GTK_DIALOG(dialog), _("Open in web browser"),
+ 				      GTKSOCKET_NOT_AVAIL_RESPONSE_OPEN_BROWSER);
+-
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		REMMINA_CRITICAL(g_strdup_printf("%s\n%s", title, err_msg));
+ 
+ 		g_signal_connect(G_OBJECT(dialog),
+Index: remmina/src/remmina_about.c
+===================================================================
+--- remmina.orig/src/remmina_about.c
++++ remmina/src/remmina_about.c
+@@ -55,7 +55,9 @@ void remmina_about_open(GtkWindow *paren
+ 	if (parent) {
+ 		gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
+ 		gtk_window_set_destroy_with_parent(GTK_WINDOW(dialog), TRUE);
+-	}
++	} else {
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
++ 	}
+ 
+ 	g_signal_connect(dialog, "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 	gtk_window_present(GTK_WINDOW(dialog));
+Index: remmina/src/remmina_exec.c
+===================================================================
+--- remmina.orig/src/remmina_exec.c
++++ remmina/src/remmina_exec.c
+@@ -126,6 +126,7 @@ void remmina_exec_exitremmina_one_confir
+ 	GtkWidget* dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION,
+ 							GTK_BUTTONS_YES_NO,
+ 							_("Are you sure you want to fully quit Remmina?\n This will close any active connections."));
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 			int response = gtk_dialog_run(GTK_DIALOG(dialog));
+ 			gtk_widget_destroy(dialog);
+ 			if (response != GTK_RESPONSE_YES)
+@@ -503,6 +504,7 @@ void remmina_exec_command(RemminaCommand
+ 		}else  {
+ 			widget = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 				_("Plugin %s is not registered."), data);
++			gtk_window_set_position(GTK_WINDOW(widget), GTK_WIN_POS_CENTER);
+ 			g_signal_connect(G_OBJECT(widget), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 			gtk_widget_show(widget);
+ 			remmina_widget_pool_register(widget);
+Index: remmina/src/remmina_file_editor.c
+===================================================================
+--- remmina.orig/src/remmina_file_editor.c
++++ remmina/src/remmina_file_editor.c
+@@ -1831,6 +1831,7 @@ static void remmina_file_editor_on_defau
+ 
+ 	dialog = gtk_message_dialog_new(GTK_WINDOW(gfe), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO,
+ 					GTK_BUTTONS_OK, _("Default settings saved."));
++	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 	gtk_dialog_run(GTK_DIALOG(dialog));
+ 	gtk_widget_destroy(dialog);
+ }
+@@ -2178,6 +2179,7 @@ GtkWidget *remmina_file_editor_new_copy(
+ 	} else {
+ 		dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+ 						_("Could not find the file “%s”."), filename);
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(dialog));
+ 		gtk_widget_destroy(dialog);
+ 		return NULL;
+@@ -2197,6 +2199,7 @@ GtkWidget *remmina_file_editor_new_from_
+ 	} else {
+ 		GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+ 							   _("Could not find the file “%s”."), filename);
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(dialog));
+ 		gtk_widget_destroy(dialog);
+ 		return NULL;
+Index: remmina/src/remmina_ftp_client.c
+===================================================================
+--- remmina.orig/src/remmina_ftp_client.c
++++ remmina/src/remmina_ftp_client.c
+@@ -547,6 +547,7 @@ static void remmina_ftp_client_action_de
+ 
+ 	dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(client))), GTK_DIALOG_MODAL,
+ 		GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, _("Are you sure to delete the selected files on server?"));
++	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 	response = gtk_dialog_run(GTK_DIALOG(dialog));
+ 	gtk_widget_destroy(dialog);
+ 	if (response != GTK_RESPONSE_YES)
+Index: remmina/src/remmina_main.c
+===================================================================
+--- remmina.orig/src/remmina_main.c
++++ remmina/src/remmina_main.c
+@@ -1001,6 +1001,7 @@ void remmina_main_on_action_connection_d
+ 
+ 	dialog = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+ 					_("Are you sure you want to delete “%s”?"), remminamain->priv->selected_name);
++	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_YES) {
+ 		gchar *delfilename = g_strdup(remminamain->priv->selected_filename);
+ 		remmina_file_delete(delfilename);
+@@ -1023,7 +1024,11 @@ void remmina_main_on_action_connection_d
+ 
+ 	dialog = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+ 				_("Are you sure you want to delete the selected files?"));
+-
++	if (remminamain->window) {
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
++	} else {
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
++	}
+ 	// Delete files if Yes is clicked
+ 	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_YES) {
+ 		while (list) {
+@@ -1034,6 +1039,11 @@ void remmina_main_on_action_connection_d
+ 				GtkWidget *dialog_warning;
+ 				dialog_warning = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, 
+ 					_("Failed to delete files!"));
++				if (remminamain->window) {
++					gtk_window_set_position(GTK_WINDOW(dialog_warning), GTK_WIN_POS_CENTER_ON_PARENT);
++				} else {
++					gtk_window_set_position(GTK_WINDOW(dialog_warning), GTK_WIN_POS_CENTER);
++				}
+ 				gtk_dialog_run(GTK_DIALOG(dialog_warning));
+ 				gtk_widget_destroy(dialog_warning);
+ 				gtk_widget_destroy(dialog);
+@@ -1217,6 +1227,11 @@ static void remmina_main_import_file_lis
+ 		// TRANSLATORS: The placeholder %s is an error message
+ 		dlg = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 					     _("Unable to import:\n%s"), err->str);
++		if (remminamain->window) {
++			gtk_window_set_position(GTK_WINDOW(dlg), GTK_WIN_POS_CENTER_ON_PARENT);
++		} else {
++			gtk_window_set_position(GTK_WINDOW(dlg), GTK_WIN_POS_CENTER);
++		}
+ 		g_signal_connect(G_OBJECT(dlg), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 		gtk_widget_show(dlg);
+ 	}
+@@ -1298,6 +1313,11 @@ void remmina_main_on_action_tools_export
+ 	if (!remminamain->priv->selected_filename) {
+ 		dialog = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 						_("Select the connection profile."));
++		if (remminamain->window) {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
++		} else {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
++		}
+ 		g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 		gtk_widget_show(dialog);
+ 		return;
+@@ -1307,6 +1327,11 @@ void remmina_main_on_action_tools_export
+ 	if (remminafile == NULL) {
+ 		dialog = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 						_("Remmina couldn't export."));
++		if (remminamain->window) {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
++		} else {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
++		}
+ 		g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 		gtk_widget_show(dialog);
+ 		return;
+@@ -1329,6 +1354,11 @@ void remmina_main_on_action_tools_export
+ 		remmina_file_free(remminafile);
+ 		dialog = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 						_("This protocol does not support exporting."));
++		if (remminamain->window) {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
++		} else {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
++		}
+ 		g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 		gtk_widget_show(dialog);
+ 		return;
+@@ -1734,6 +1764,8 @@ GtkWidget *remmina_main_new(void)
+ 		gtk_window_set_position(remminamain->window, GTK_WIN_POS_CENTER_ALWAYS);
+ 		gtk_window_set_default_size(remminamain->window, 800, 400);
+ 		gtk_window_set_resizable(remminamain->window, FALSE);
++	} else {
++    	gtk_window_set_position(remminamain->window, GTK_WIN_POS_CENTER);
+ 	}
+ 	/* New Button */
+ 	remminamain->button_new = GTK_BUTTON(RM_GET_OBJECT("button_new"));
+@@ -1827,6 +1859,11 @@ void remmina_main_show_dialog(GtkMessage
+ 
+ 	if (remminamain->window) {
+ 		dialog = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, msg, buttons, "%s", message);
++		if (remminamain->window) {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
++		} else {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
++		}
+ 		gtk_dialog_run(GTK_DIALOG(dialog));
+ 		gtk_widget_destroy(dialog);
+ 	}
+@@ -1838,6 +1875,11 @@ void remmina_main_show_warning_dialog(co
+     if (remminamain->window) {
+         dialog = gtk_message_dialog_new(remminamain->window, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING, GTK_BUTTONS_CLOSE,
+                                         message, g_get_application_name());
++		if (remminamain->window) {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
++		} else {
++			gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
++		}
+         gtk_dialog_run(GTK_DIALOG(dialog));
+         gtk_widget_destroy(dialog);
+     }
+Index: remmina/src/remmina_mpchange.c
+===================================================================
+--- remmina.orig/src/remmina_mpchange.c
++++ remmina/src/remmina_mpchange.c
+@@ -261,6 +261,7 @@ static void remmina_mpchange_dochange_cl
+ 			GTK_MESSAGE_ERROR,
+ 			GTK_BUTTONS_CLOSE,
+ 			_("The passwords do not match"));
++		gtk_window_set_position(GTK_WINDOW(msgDialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(msgDialog));
+ 		gtk_widget_destroy(msgDialog);
+ 		return;
+@@ -274,6 +275,7 @@ static void remmina_mpchange_dochange_cl
+ 			GTK_MESSAGE_ERROR,
+ 			GTK_BUTTONS_CLOSE,
+ 			_("The Gateway passwords do not match"));
++		gtk_window_set_position(GTK_WINDOW(msgDialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(msgDialog));
+ 		gtk_widget_destroy(msgDialog);
+ 		return;
+@@ -388,6 +390,7 @@ static gboolean remmina_file_multipasswd
+ 		GtkWidget *msgDialog;
+ 		msgDialog = gtk_message_dialog_new(mainwindow, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK,
+ 			"%s", initerror);
++		gtk_window_set_position(GTK_WINDOW(msgDialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(msgDialog));
+ 		gtk_widget_destroy(msgDialog);
+ 		return FALSE;
+@@ -477,6 +480,7 @@ static gboolean remmina_file_multipasswd
+ 			GTK_MESSAGE_INFO,
+ 			GTK_BUTTONS_OK,
+ 			ngettext("%d password changed.", "%d passwords changed.", mpcp->changed_passwords_count), mpcp->changed_passwords_count);
++		gtk_window_set_position(GTK_WINDOW(msgDialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(msgDialog));
+ 		gtk_widget_destroy(msgDialog);
+ 	}
+Index: remmina/src/remmina_pref_dialog.c
+===================================================================
+--- remmina.orig/src/remmina_pref_dialog.c
++++ remmina/src/remmina_pref_dialog.c
+@@ -145,6 +145,7 @@ void remmina_pref_dialog_clear_recent(Gt
+ 	dialog = GTK_DIALOG(gtk_message_dialog_new(GTK_WINDOW(remmina_pref_dialog->dialog),
+ 						   GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
+ 						   _("Recent lists cleared.")));
++	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 	gtk_dialog_run(dialog);
+ 	gtk_widget_destroy(GTK_WIDGET(dialog));
+ }
+@@ -722,8 +723,12 @@ GtkWidget *remmina_pref_dialog_new(gint
+ 
+ 	remmina_pref_dialog->builder = remmina_public_gtk_builder_new_from_resource("/org/remmina/Remmina/src/../data/ui/remmina_preferences.glade");
+ 	remmina_pref_dialog->dialog = GTK_WIDGET(gtk_builder_get_object(remmina_pref_dialog->builder, "RemminaPrefDialog"));
+-	if (parent)
+-		gtk_window_set_transient_for(GTK_WINDOW(remmina_pref_dialog->dialog), parent);
++	if (parent) {
++ 		gtk_window_set_transient_for(GTK_WINDOW(remmina_pref_dialog->dialog), parent);
++		gtk_window_set_position(GTK_WINDOW(remmina_pref_dialog->dialog), GTK_WIN_POS_CENTER_ON_PARENT);
++	} else {
++		gtk_window_set_position(GTK_WINDOW(remmina_pref_dialog->dialog), GTK_WIN_POS_CENTER);
++	}
+ 
+ 	remmina_pref_dialog->notebook_preferences = GTK_NOTEBOOK(GET_OBJECT("notebook_preferences"));
+ 
+Index: remmina/src/remmina_sftp_client.c
+===================================================================
+--- remmina.orig/src/remmina_sftp_client.c
++++ remmina/src/remmina_sftp_client.c
+@@ -709,6 +709,7 @@ remmina_sftp_client_sftp_session_opendir
+ 						GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 						_("Could not open the folder “%s”. %s"), dir,
+ 						ssh_get_error(REMMINA_SSH(client->sftp)->session));
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(dialog));
+ 		gtk_widget_destroy(dialog);
+ 		return NULL;
+@@ -725,6 +726,7 @@ remmina_sftp_client_sftp_session_closedi
+ 		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(client))),
+ 						GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 						_("Could not read from the folder. %s"), ssh_get_error(REMMINA_SSH(client->sftp)->session));
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(dialog));
+ 		gtk_widget_destroy(dialog);
+ 		return FALSE;
+@@ -784,6 +786,7 @@ remmina_sftp_client_on_opendir(RemminaSF
+ 						GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 						_("Could not open the folder “%s”. %s"), dir,
+ 						ssh_get_error(REMMINA_SSH(client->sftp)->session));
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		gtk_widget_show(dialog);
+ 		g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 		g_free(newdir_conv);
+@@ -846,6 +849,7 @@ remmina_sftp_client_on_canceltask(Remmin
+ 	dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(client))),
+ 					GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+ 					_("Are you sure you want to cancel the file transfer in progress?"));
++	gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 	ret = gtk_dialog_run(GTK_DIALOG(dialog));
+ 	gtk_widget_destroy(dialog);
+ 	if (ret == GTK_RESPONSE_YES) {
+@@ -881,6 +885,7 @@ remmina_sftp_client_on_deletefile(Remmin
+ 						GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+ 						_("Could not delete “%s”. %s"),
+ 						name, ssh_get_error(REMMINA_SSH(client->sftp)->session));
++		gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+ 		gtk_dialog_run(GTK_DIALOG(dialog));
+ 		gtk_widget_destroy(dialog);
+ 		return FALSE;
+Index: remmina/src/remmina_ssh_plugin.c
+===================================================================
+--- remmina.orig/src/remmina_ssh_plugin.c
++++ remmina/src/remmina_ssh_plugin.c
+@@ -549,6 +549,7 @@ remmina_plugin_ssh_vte_save_session(GtkM
+ 	if (err != NULL) {
+ 		// TRANSLATORS: %s is a placeholder for an error message
+ 		widget = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, _("Error: %s"), err->message);
++		gtk_window_set_position(GTK_WINDOW(widget), GTK_WIN_POS_CENTER);
+ 		g_signal_connect(G_OBJECT(widget), "response", G_CALLBACK(gtk_widget_destroy), NULL);
+ 		gtk_widget_show(widget);
+ 		return;
