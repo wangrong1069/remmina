@@ -1,3 +1,10 @@
+remmina (1.4.34+dfsg-1deepin2) unstable; urgency=medium
+
+  * chore: Update version to 1.4.34+dfsg-1deepin2
+  * fix(ui): adjust new connection window center
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Thu, 12 Feb 2026 10:28:30 +0800
+
 remmina (1.4.34+dfsg-1deepin1) unstable; urgency=medium
 
   * fix(ui): center dialogs on screen when displayed
