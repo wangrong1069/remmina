@@ -2,6 +2,7 @@
  * Remmina - The GTK+ Remote Desktop Client
  * Copyright (C) 2010-2011 Vic Lee
  * Copyright (C) 2017-2023 Antenore Gatta, Giovanni Panozzo
+ * Copyright (C) 2023-2024 Hiroyuki Tanaka, Sunil Bhat
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,23 +38,12 @@
 
 #include <glib.h>
 #include "common/remmina_plugin.h"
-#include "rdp_plugin.h"
 
 G_BEGIN_DECLS
 
-
-void remmina_rdp_event_init(RemminaProtocolWidget *gp);
-void remmina_rdp_event_uninit(RemminaProtocolWidget *gp);
-void remmina_rdp_event_update_scale(RemminaProtocolWidget *gp);
-void remmina_rdp_event_unfocus(RemminaProtocolWidget *gp);
-void remmina_rdp_event_send_delayed_monitor_layout(RemminaProtocolWidget *gp);
-void remmina_rdp_event_update_rect(RemminaProtocolWidget *gp, gint x, gint y, gint w, gint h);
-void remmina_rdp_event_queue_ui_async(RemminaProtocolWidget *gp, RemminaPluginRdpUiObject *ui);
-int remmina_rdp_event_queue_ui_sync_retint(RemminaProtocolWidget *gp, RemminaPluginRdpUiObject *ui);
-void *remmina_rdp_event_queue_ui_sync_retptr(RemminaProtocolWidget *gp, RemminaPluginRdpUiObject *ui);
-gboolean remmina_rdp_event_on_map(RemminaProtocolWidget *gp);
-gboolean remmina_rdp_event_on_unmap(RemminaProtocolWidget *gp);
-void remmina_rdp_mouse_jitter(RemminaProtocolWidget *gp);
-void remmina_rdp_idle_keypress(RemminaProtocolWidget *gp, int *keypress_opts);
+gboolean remmina_spice_file_import_test(RemminaFilePlugin *plugin, const gchar *from_file);
+RemminaFile *remmina_spice_file_import(RemminaFilePlugin *plugin, const gchar *from_file);
+gboolean remmina_spice_file_export_test(RemminaFilePlugin *plugin, RemminaFile *remminafile);
+gboolean remmina_spice_file_export(RemminaFilePlugin *plugin, RemminaFile *remminafile, const gchar *to_file);
 
 G_END_DECLS

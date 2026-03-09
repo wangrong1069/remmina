@@ -371,7 +371,8 @@ void remmina_icon_init(void)
 	/* Print on stdout the availability of appindicators on DBUS */
 	sni_supported = remmina_sysinfo_is_appindicator_available();
 
-	g_autofree gchar *wmname = g_ascii_strdown(remmina_sysinfo_get_wm_name(), -1);
+	g_autofree gchar *wmnameu = remmina_sysinfo_get_wm_name();
+	g_autofree gchar *wmname = g_ascii_strdown(wmnameu, -1);
 	//TRANSLATORS: These are Linux desktop components to show icons in the system tray, after the “ there's the Desktop Name (like GNOME).
 	g_autofree gchar *msg = g_strconcat(
 		_("StatusNotifier/Appindicator support in “"),
@@ -432,7 +433,6 @@ void remmina_icon_init(void)
 	// "connected" property means a visible indicator, otherwise could be hidden. or fall back to GtkStatusIcon
 	if (remmina_icon.icon)
 		g_signal_connect(G_OBJECT(remmina_icon.icon), "connection-changed", G_CALLBACK(remmina_icon_connection_changed_cb), NULL);
-	//g_object_get(G_OBJECT(remmina_icon.icon), "connected", &remmina_icon.indicator_connected, NULL);
 }
 
 gboolean remmina_icon_is_autostart(void)

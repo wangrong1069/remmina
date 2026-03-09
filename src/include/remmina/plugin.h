@@ -125,6 +125,7 @@ typedef struct _RemminaFilePlugin {
 	gboolean (*export_test_func)(struct _RemminaFilePlugin* instance, RemminaFile *file);
 	gboolean (*export_func)(struct _RemminaFilePlugin* instance, RemminaFile *file, const gchar *to_file);
 	const gchar *		export_hints;
+	const gchar * 		export_ext;
 } RemminaFilePlugin;
 
 typedef struct _RemminaToolPlugin {
@@ -282,6 +283,7 @@ typedef struct _RemminaPluginService {
 	RemminaFile *(*protocol_widget_get_file)(RemminaProtocolWidget *gp);
 	gint (*protocol_widget_panel_auth)(RemminaProtocolWidget *gp, RemminaMessagePanelFlags pflags,
 					const gchar *title, const gchar *default_username, const gchar *default_password, const gchar *default_domain, const gchar *password_prompt);
+	gint (*protocol_widget_panel_accept)(RemminaProtocolWidget *gp, const char *msg);
 	void (*protocol_widget_register_hostkey)(RemminaProtocolWidget *gp, GtkWidget *widget);
 	gchar *(*protocol_widget_start_direct_tunnel)(RemminaProtocolWidget *gp, gint default_port, gboolean port_plus);
 	gboolean (*protocol_widget_start_reverse_tunnel)(RemminaProtocolWidget *gp, gint local_port);
@@ -318,6 +320,7 @@ typedef struct _RemminaPluginService {
 	void (*show_dialog)(GtkMessageType msg, GtkButtonsType buttons, const gchar* message);
 	GtkWindow *(*get_window)(void);
 	gint (*plugin_unlock_new)(GtkWindow* parent);
+	void (*add_network_state)(gchar* key, gchar* value);
 } RemminaPluginService;
 
 /* "Prototype" of the plugin entry function */

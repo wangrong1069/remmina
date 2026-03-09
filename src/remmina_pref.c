@@ -274,6 +274,10 @@ void remmina_pref_init(void)
 			}
 			g_free(remmina_dir), remmina_dir = NULL;
 			g_dir_close(dir);
+		} else if (dirs[i + 1] != NULL) {
+			// Handle the case where g_file_test(remmina_dir, G_FILE_TEST_IS_DIR) is NULL
+			g_free(remmina_dir);
+			remmina_dir = NULL;
 		}
 	}
 	
@@ -394,6 +398,11 @@ void remmina_pref_init(void)
 	else
 		remmina_pref.always_show_notes = FALSE;
 
+	if (g_key_file_has_key(gkeyfile, "remmina_pref", "mp_left", NULL))
+		remmina_pref.mp_left = g_key_file_get_boolean(gkeyfile, "remmina_pref", "mp_left", NULL);
+	else
+		remmina_pref.mp_left = FALSE;
+
 	if (g_key_file_has_key(gkeyfile, "remmina_pref", "hide_connection_toolbar", NULL))
 		remmina_pref.hide_connection_toolbar = g_key_file_get_boolean(gkeyfile, "remmina_pref",
 									      "hide_connection_toolbar", NULL);
@@ -498,10 +507,18 @@ void remmina_pref_init(void)
 	else
 		remmina_pref.datadir_path = g_strdup("");
 
-	if (g_key_file_has_key(gkeyfile, "remmina_pref", "remmina_file_name", NULL))
-		remmina_pref.remmina_file_name = g_key_file_get_string(gkeyfile, "remmina_pref", "remmina_file_name", NULL);
-	else
+	if (g_key_file_has_key(gkeyfile, "remmina_pref", "remmina_file_name", NULL)) {
+		if (strcmp(g_key_file_get_string(gkeyfile, "remmina_pref", "remmina_file_name", NULL), "") != 0) {
+			remmina_pref.remmina_file_name = g_key_file_get_string(gkeyfile, "remmina_pref", "remmina_file_name", NULL);
+		}
+		else {
+			REMMINA_DEBUG("remmina_file_name in config is empty, setting to %%G_%%P_%%N_%%h");
+			remmina_pref.remmina_file_name = g_strdup("%G_%P_%N_%h");
+		}
+	}
+	else {
 		remmina_pref.remmina_file_name = g_strdup("%G_%P_%N_%h");
+	}
 
 	if (g_key_file_has_key(gkeyfile, "remmina_pref", "screenshot_path", NULL)) {
 		remmina_pref.screenshot_path = g_key_file_get_string(gkeyfile, "remmina_pref", "screenshot_path", NULL);
@@ -911,6 +928,7 @@ gboolean remmina_pref_save(void)
 	g_key_file_set_boolean(gkeyfile, "remmina_pref", "fullscreen_on_auto", remmina_pref.fullscreen_on_auto);
 	g_key_file_set_boolean(gkeyfile, "remmina_pref", "always_show_tab", remmina_pref.always_show_tab);
 	g_key_file_set_boolean(gkeyfile, "remmina_pref", "always_show_notes", remmina_pref.always_show_notes);
+	g_key_file_set_boolean(gkeyfile, "remmina_pref", "mp_left", remmina_pref.mp_left);
 	g_key_file_set_boolean(gkeyfile, "remmina_pref", "hide_connection_toolbar", remmina_pref.hide_connection_toolbar);
 	g_key_file_set_boolean(gkeyfile, "remmina_pref", "hide_searchbar", remmina_pref.hide_searchbar);
 	g_key_file_set_integer(gkeyfile, "remmina_pref", "default_action", remmina_pref.default_action);

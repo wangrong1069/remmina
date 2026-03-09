@@ -67,6 +67,8 @@
 
 static GPtrArray* remmina_plugin_table = NULL;
 
+GPtrArray *loaded_plugins = NULL;
+
 static GPtrArray* remmina_available_plugin_table = NULL;
 
 static GtkDialog* remmina_plugin_window = NULL;
@@ -286,6 +288,7 @@ RemminaPluginService remmina_plugin_manager_service =
 	remmina_protocol_widget_is_closed,
 	remmina_protocol_widget_get_file,
 	remmina_protocol_widget_panel_auth,
+	remmina_protocol_widget_panel_question_accept,
 	remmina_protocol_widget_register_hostkey,
 	remmina_protocol_widget_start_direct_tunnel,
 	remmina_protocol_widget_start_reverse_tunnel,
@@ -321,6 +324,7 @@ RemminaPluginService remmina_plugin_manager_service =
 	remmina_main_show_dialog,
 	remmina_main_get_window,
 	remmina_unlock_new,
+	remmina_main_add_network_status,
 };
 
 const char *get_filename_ext(const char *filename) {
@@ -364,7 +368,7 @@ gchar* remmina_plugin_manager_create_alt_plugin_dir()
 }
 
 
-void remmina_plugin_manager_load_plugins(GPtrArray *plugin_dirs, int array_size)
+void remmina_plugin_manager_load_plugins(GPtrArray *plugin_dirs, int array_size, gboolean reload)
 {
 	TRACE_CALL(__func__);
 	GDir *dir;
@@ -376,7 +380,9 @@ void remmina_plugin_manager_load_plugins(GPtrArray *plugin_dirs, int array_size)
 	GSList *secret_plugins;
 	GSList *sple;
 	GPtrArray *alternative_language_plugins;
-	GPtrArray *loaded_plugins = g_ptr_array_new();
+	if (loaded_plugins == NULL){
+		loaded_plugins = g_ptr_array_new();
+	}
 	alternative_language_plugins = g_ptr_array_new();
 	char* plugin_dir = NULL;
 
@@ -447,6 +453,10 @@ void remmina_plugin_manager_load_plugins(GPtrArray *plugin_dirs, int array_size)
 		g_free(name);
 	}
 
+	if (reload == TRUE){
+		g_ptr_array_free(alternative_language_plugins, TRUE);
+		return;
+	}
 	/* Now all secret plugins needs to initialize, following their init_order.
 	 * The 1st plugin which will initialize correctly will be
 	 * the default remmina_secret_plugin */
@@ -476,7 +486,6 @@ void remmina_plugin_manager_load_plugins(GPtrArray *plugin_dirs, int array_size)
 
 	g_slist_free(secret_plugins);
 	g_ptr_array_free(alternative_language_plugins, TRUE);
-	g_ptr_array_free(loaded_plugins, TRUE);
 }
 
 void remmina_plugin_manager_init()
@@ -502,7 +511,7 @@ void remmina_plugin_manager_init()
 		
 	}
 	g_ptr_array_add(plugin_dirs, REMMINA_RUNTIME_PLUGINDIR);
-	remmina_plugin_manager_load_plugins(plugin_dirs, array_size);
+	remmina_plugin_manager_load_plugins(plugin_dirs, array_size, FALSE);
 
 
 	if (alternative_dir){
@@ -601,6 +610,8 @@ JsonNode *remmina_plugin_manager_plugin_stats_get_all()
 
 		n = remmina_info_stats_get_uid();
 		uid = g_strdup(json_node_get_string(n));
+		json_node_unref(n);
+		n = NULL;
 		json_builder_set_member_name(b_outer, "UID");
 		json_builder_add_string_value(b_outer, uid);
 
@@ -615,6 +626,8 @@ JsonNode *remmina_plugin_manager_plugin_stats_get_all()
 
 		g = json_generator_new();
 		json_generator_set_root(g, n);
+		json_node_unref(n);
+		n = NULL;
 		unenc_p = json_generator_to_data(g, NULL);
 
 
@@ -892,11 +905,11 @@ GFile* remmina_create_plugin_file(const gchar* plugin_name, const gchar* plugin_
 
 	if (plugin_version != NULL){
 		plugin_dir = g_build_path("/", "/tmp", NULL);
-		snprintf(file_name, MAX_PLUGIN_NAME_SIZE, "%s/%s_%s", plugin_dir, plugin_name, plugin_version);
+		snprintf(file_name, MAX_PLUGIN_NAME_SIZE, "%s/%s_%s", plugin_dir, g_path_get_basename(plugin_name), plugin_version);
 	}
 	else{
 		plugin_dir = g_build_path("/", g_get_user_config_dir(), "remmina", "plugins", NULL);
-		snprintf(file_name, MAX_PLUGIN_NAME_SIZE, "%s/%s", plugin_dir, plugin_name);
+		snprintf(file_name, MAX_PLUGIN_NAME_SIZE, "%s/%s", plugin_dir, g_path_get_basename(plugin_name));
 	}
 	GFile* plugin_file = g_file_new_for_path(file_name);
 	
@@ -1132,15 +1145,25 @@ gboolean remmina_plugin_manager_download_plugins(gpointer user_data)
 				success_count += 1;
 			}
 		}
+		if (success_count > 0){
+			GPtrArray *plugin_dirs = g_ptr_array_new();
+			char* alternative_dir = remmina_plugin_manager_create_alt_plugin_dir();
+			if (alternative_dir != NULL){
+				g_ptr_array_add(plugin_dirs, alternative_dir);
+				remmina_plugin_manager_load_plugins(plugin_dirs, 1, TRUE);
+			}
+			g_ptr_array_free(plugin_dirs, TRUE);
+			g_free(alternative_dir);
+		}
 
 		if (remmina_plugin_window != NULL && remmina_plugin_signal_data != NULL && remmina_plugin_signal_data->downloading == TRUE){
 			if(success_count == data_array->len)
 			{
-				remmina_plugin_manager_download_result_dialog(remmina_plugin_window, "Plugin download successful! Please reboot Remmina in order to apply changes.\n");
+				remmina_plugin_manager_download_result_dialog(remmina_plugin_window, "Plugin download successful! Reboot may be needed in order to apply changes.\n");
 			}
 			else if((success_count < data_array->len) && (success_count != 0))
 			{
-				remmina_plugin_manager_download_result_dialog(remmina_plugin_window, "Plugin download partially successful! Please reboot Remmina in order to apply changes.\n");
+				remmina_plugin_manager_download_result_dialog(remmina_plugin_window, "Plugin download partially successful! Reboot may be needed in order to apply changes.\n");
 			}
 			else
 			{

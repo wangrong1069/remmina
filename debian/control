@@ -7,7 +7,7 @@ Uploaders:
 Build-Depends:
  cmake (>= 3.5),
  debhelper-compat (= 13),
- freerdp2-dev (>= 2.2.0~),
+ freerdp3-dev (>= 3.5.0~),
  intltool,
  libayatana-appindicator3-dev,
  libavahi-ui-gtk3-dev (>= 0.6.0),
@@ -33,7 +33,7 @@ Build-Depends:
  libwebkit2gtk-4.1-dev,
  libxkbfile-dev,
  python3-dev
-Standards-Version: 4.6.2
+Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://www.remmina.org/
 Vcs-Git: https://salsa.debian.org/debian-remote-team/remmina.git

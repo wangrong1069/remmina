@@ -1,3 +1,84 @@
+## v1.4.39
+[full changelog](https://gitlab.com/Remmina/Remmina/compare/v1.4.38...v1.4.39)
+
+* [REM-3260] Fix bug passing wrong value in SPICE plugin (Breaking compilation on some distributions) [!2624](https://gitlab.com/Remmina/Remmina/merge_requests/2628) *@myheroyuki*
+
+## v1.4.38
+[full changelog](https://gitlab.com/Remmina/Remmina/compare/v1.4.37...v1.4.38)
+
+* [REM-3257] Add option to automatically copy ssh text when selected [!2624](https://gitlab.com/Remmina/Remmina/-/merge_requests/2624) *@myheroyuki*
+* [REM-2604] Allow -c to work with www plugin [!2604](https://gitlab.com/Remmina/Remmina/merge_requests/2604) *@myheroyuki*
+* [REM-3256] Don't prompt about closing connections with no connections [!2625](https://gitlab.com/Remmina/Remmina/merge_requests/2625) *@myheroyuki*
+* Mainly fixing memory leaks and some small bugs [!2626](https://gitlab.com/Remmina/Remmina/merge_requests/2626) *@myheroyuki*
+
+
+## v1.4.37
+[full changelog](https://gitlab.com/Remmina/Remmina/compare/v1.4.36...v1.4.37)
+
+* Implement horizontal smooth scrolling in RDP [!2606](https://gitlab.com/Remmina/Remmina/-/merge_requests/2606) *@acutemeridian*
+* [REM-3209] Allow -c to work with www plugin [!2607](https://gitlab.com/Remmina/Remmina/merge_requests/2607) *@myheroyuki*
+* [REM-3210] Add ability to lock message panels to one side of the window [!2608](https://gitlab.com/Remmina/Remmina/merge_requests/2608) *@myheroyuki*
+* [REM-3223] fix dangling pointer in ssh_options_get_port invocation [!2609](https://gitlab.com/Remmina/Remmina/merge_requests/2609) *@Victrid*
+* Revert "[REM-2854] Add timeout option to handle VNC disconnects" [!2610](https://gitlab.com/Remmina/Remmina/merge_requests/2610) *@myheroyuki*
+* Fix OpenSSL include dir [!2611](https://gitlab.com/Remmina/Remmina/merge_requests/2611) *@mtelka*
+* Revert "[REM-3121] Handle GotFrameBufferUpdate on its own thread to prevent freeze" [!2612](https://gitlab.com/Remmina/Remmina/merge_requests/2612) *@myheroyuki*
+* [REM-3227] fix compile warning that is failure with newer gcc versions [!2613](https://gitlab.com/Remmina/Remmina/merge_requests/2613) *@myheroyuki*
+* [REM-3206] Add null check to prevent crash when pasting empty clipbaord [!2614](https://gitlab.com/Remmina/Remmina/merge_requests/2614) *@myheroyuki*
+* [REM-3076] [REM-3086] Remove support for FreeRDP_SupportMonitorLayoutPdu to prevent loss of keyboard with xrdp [!2615](https://gitlab.com/Remmina/Remmina/merge_requests/2615) *@myheroyuki*
+* [REM-3236] Don't rely on padding characters to be present to try decrypting passwords [!2616](https://gitlab.com/Remmina/Remmina/merge_requests/2585) *@myheroyuki*
+* [REM-3246] Add option to immediately close VNC windows when they fail to... [!2617](https://gitlab.com/Remmina/Remmina/merge_requests/2617) *@myheroyuki*
+* Allow Remmina to use plugins immediately on download without needing a restart [!2618](https://gitlab.com/Remmina/Remmina/merge_requests/2618) *@myheroyuki*
+* [REM-3176] Add plugin api to allow Remmina to display if a profile is...  [!2619](https://gitlab.com/Remmina/Remmina/merge_requests/2619) *@myheroyuki*
+* [REM-3177] Fix error message for failed RDP connection [!2620](https://gitlab.com/Remmina/Remmina/merge_requests/2620) *@myheroyuki*
+* Add more detail to bug report to make certain issues easier to solve [!2621](https://gitlab.com/Remmina/Remmina/merge_requests/2621) *@myheroyuki*
+* [REM-3176] Resize icons to fit flatpak specifications [!2622](https://gitlab.com/Remmina/Remmina/merge_requests/2622) *@myheroyuki*
+
+
+## v1.4.36
+[full changelog](https://gitlab.com/Remmina/Remmina/compare/v1.4.35...v1.4.36)
+
+* Fix crash with keyboard-interactive SSH auth [!2576](https://gitlab.com/Remmina/Remmina/merge_requests/2576) *@bhatman1441*
+* Prevent empty remmina_file_name in remmina.pref [!2577](https://gitlab.com/Remmina/Remmina/merge_requests/2577) *@bhatman1441*
+* rdp/rdp-plugin: Fix faulty color depth check [!2579](https://gitlab.com/Remmina/Remmina/merge_requests/2579) *@pnowack*
+* Fix typos [!2578](https://gitlab.com/Remmina/Remmina/merge_requests/2578) *@deining*
+* Usbredirect on connect [!2580](https://gitlab.com/Remmina/Remmina/merge_requests/2580) *@hunderteins*
+* [REM-3104] Add global RDP options to set FreeRDP auth filter [!2581](https://gitlab.com/Remmina/Remmina/merge_requests/2581) *@myheroyuki*
+* Use universal /bin/sh shebang in remmina-rile-wrapper(1) [!2572](https://gitlab.com/Remmina/Remmina/merge_requests/2572) *@klemensn*
+* [REM-3104] Added back in line that was accidentally removed before merge [!2582](https://gitlab.com/Remmina/Remmina/merge_requests/2582) *@myheroyuki*
+* [REM-3104] Do not initialize rdp_auth_filter [!2583](https://gitlab.com/Remmina/Remmina/merge_requests/2583) *@myheroyuki*
+* [REM-3076] Add proxy field for SPICE connections [!2584](https://gitlab.com/Remmina/Remmina/merge_requests/2584) *@myheroyuki*
+* add a conditional check for darwin and NetBSD [!2585](https://gitlab.com/Remmina/Remmina/merge_requests/2585) *@gador1*
+* [REM-3103] Make more obvious to user that Remmina may not be able to exec... [!2586](https://gitlab.com/Remmina/Remmina/merge_requests/2586) *@myheroyuki*
+* [REM-3121] Handle GotFrameBufferUpdate on its own thread to prevent freeze [!2587](https://gitlab.com/Remmina/Remmina/merge_requests/2587) *@myheroyuki*
+* Enable horitical scroll on RDP plugin. [!2588](https://gitlab.com/Remmina/Remmina/merge_requests/2588) *@AkiraPenguin*
+* [REM-2854] Add timeout option to handle VNC disconnects [!2589](https://gitlab.com/Remmina/Remmina/merge_requests/2589) *@myheroyuki*
+* [REM-3134] Fix bug where option to send clipboard as keystrokes did not appear [!2590](https://gitlab.com/Remmina/Remmina/merge_requests/2590) *@myheroyuki*
+* Add ability to send a key combination when RDP connection is idle [!2591](https://gitlab.com/Remmina/Remmina/merge_requests/2591) *@dexxter00*
+* [REM-3111] Do not prompt user for credentials if they have already been entered [!2592](https://gitlab.com/Remmina/Remmina/merge_requests/2592) *@myheroyuki*
+* [REM-3140] Add null check to prevent segfault [!2593](https://gitlab.com/Remmina/Remmina/merge_requests/2593) *@myheroyuki*
+* Move the idle timer into rf_context to make it session-specific. [!2594](https://gitlab.com/Remmina/Remmina/merge_requests/2594) *@morganw3*
+* [REM-3156] Limit connection name on rcw tab to reasonable length [!2595](https://gitlab.com/Remmina/Remmina/merge_requests/2595) *@myheroyuki*
+* Update several dependencies [!2596](https://gitlab.com/Remmina/Remmina/merge_requests/2596) *@myheroyuki*
+* [REM-3127] Add user prompt for gateway messages [!2597](https://gitlab.com/Remmina/Remmina/merge_requests/2597) *@myheroyuki*
+* [REM-3167] Add reconnect button to rcw [!2598](https://gitlab.com/Remmina/Remmina/merge_requests/2598) *@myheroyuki*
+* [REM-3127] Changed to put call to a message accept panel in the RemminaPluginService struct [!2599](https://gitlab.com/Remmina/Remmina/merge_requests/2599) *@myheroyuki*
+* Removed unused, commented code [!2600](https://gitlab.com/Remmina/Remmina/merge_requests/2600) *@myheroyuki*
+* [REM-2428] Allow floating toolbar to be drag and dropped to more locations on the screen [!2601](https://gitlab.com/Remmina/Remmina/merge_requests/2601) *@myheroyuki*
+* [REM-3162] Fixed some compile warnings causing issues with GCC 14.2.1 [!2602](https://gitlab.com/Remmina/Remmina/merge_requests/2602) *@myheroyuki*
+* Update ssh error to not show outdated message [!2603](https://gitlab.com/Remmina/Remmina/merge_requests/2603) *@myheroyuki*
+
+
+## v1.4.35
+[full changelog](https://gitlab.com/Remmina/Remmina/compare/v1.4.34...v1.4.35)
+
+* Fix build for openssl-1.1 [!2565](https://gitlab.com/Remmina/Remmina/merge_requests/2565) *@bhatman1441*
+* Allow running an SSH command when connecting via ssh tunnel [!2566](https://gitlab.com/Remmina/Remmina/merge_requests/2566) *@myheroyuki*
+* Check if WINPR_ASSERT is defined [!2567](https://gitlab.com/Remmina/Remmina/merge_requests/2567) *@bhatman1441*
+* [REM-3047] fix issue compiling with gcc-14 [!2568](https://gitlab.com/Remmina/Remmina/merge_requests/2568) *@myheroyuki*
+* Fix crash caused by enabling disablepasswordstoring [!2569](https://gitlab.com/Remmina/Remmina/merge_requests/2569) *@bhatman1441*
+* Revert setting loadbalanceinfo to the old method used before FreeRDP3 [!2570](https://gitlab.com/Remmina/Remmina/merge_requests/2570) *@myheroyuki*
+* updated call to set FreeRDP_LoadBalanceInfo [!2571](https://gitlab.com/Remmina/Remmina/merge_requests/2571) *@myheroyuki*
+
 ## v1.4.34
 [full changelog](https://gitlab.com/Remmina/Remmina/compare/v.1.4.33...v1.4.34)
 

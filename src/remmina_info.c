@@ -378,6 +378,7 @@ JsonNode *remmina_info_stats_get_user_env()
 	JsonBuilder *b;
 	JsonNode *r;
 
+	gchar *plist;
 	gchar *language;
 	gchar **environment;
 	gchar **uenv;
@@ -395,6 +396,16 @@ JsonNode *remmina_info_stats_get_user_env()
 	uenv = environment;
 
 	json_builder_begin_object(b);
+
+	json_builder_set_member_name(b, "process_list");
+	plist = remmina_utils_get_process_list();
+	if (!plist || plist[0] == '\0') {
+		json_builder_add_null_value(b);
+	}else {
+		json_builder_add_string_value(b, plist);
+	}
+	g_free(plist);
+
 	json_builder_set_member_name(b, "language");
 	json_builder_add_string_value(b, language);
 
@@ -689,7 +700,6 @@ static void remmina_info_profiles_get_data(RemminaFile *remminafile, gpointer us
 	pdata = (struct ProfilesData*)user_data;
 
 	pdata->protocol = remmina_file_get_string(remminafile, "protocol");
-	//pdata->pdatestr = remmina_file_get_string(remminafile, "last_success");
 	const gchar *last_success = remmina_file_get_string(remminafile, "last_success");
 
 	prof_gdate = pdata_gdate = NULL;
@@ -1278,7 +1288,7 @@ void remmina_info_request(gpointer data)
 {
 	// send initial handshake here, in a callback decide how to handle response
 
-	JsonNode *n;
+	JsonNode *n, *n2;
 	JsonGenerator *g;
 	gchar *enc_s;
 	JsonBuilder *b;
@@ -1308,17 +1318,20 @@ void remmina_info_request(gpointer data)
 
 
 	json_builder_end_object(b);
-	n = json_builder_get_root(b);
+	n2 = json_builder_get_root(b);
 
 	g_object_unref(b);
 
 
 	g = json_generator_new();
-	json_generator_set_root(g, n);
+	json_generator_set_root(g, n2);
 	enc_s = json_generator_to_data(g, NULL);
 	g_object_unref(g);
 	remmina_curl_compose_message(enc_s, "POST", INFO_REQUEST_URL, NULL);
-	json_node_unref(n);
+	if(n != NULL){
+		json_node_unref(n);
+	}
+	json_node_unref(n2);	
 }
 
 gboolean remmina_info_periodic_check(gpointer user_data)

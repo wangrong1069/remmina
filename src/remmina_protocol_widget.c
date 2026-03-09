@@ -105,7 +105,8 @@ struct _RemminaProtocolWidgetPriv {
 enum panel_type {
 	RPWDT_AUTH,
 	RPWDT_QUESTIONYESNO,
-	RPWDT_AUTHX509
+	RPWDT_AUTHX509,
+	RPWDT_ACCEPT
 };
 
 G_DEFINE_TYPE(RemminaProtocolWidget, remmina_protocol_widget, GTK_TYPE_EVENT_BOX)
@@ -616,6 +617,7 @@ void remmina_protocol_widget_send_keystrokes(RemminaProtocolWidget *gp, GtkMenuI
 			iter = g_utf8_find_next_char(iter, NULL);
 		}
 		g_free(keyvals);
+		g_free(iter);
 	}
 	g_free(keystrokes);
 	return;
@@ -631,6 +633,9 @@ void remmina_protocol_widget_send_clip_strokes(GtkClipboard *clipboard, const gc
 {
 	TRACE_CALL(__func__);
 	RemminaProtocolWidget *gp = REMMINA_PROTOCOL_WIDGET(data);
+	if (clip_text == NULL){
+		return;
+	}
 	gchar *text = g_utf8_normalize(clip_text, -1, G_NORMALIZE_DEFAULT_COMPOSE);
 	guint *keyvals;
 	gint i;
@@ -717,6 +722,7 @@ void remmina_protocol_widget_send_clip_strokes(GtkClipboard *clipboard, const gc
 				iter = g_utf8_find_next_char(iter, NULL);
 			}
 			g_free(keyvals);
+			g_free(iter);
 		}
 		g_free(text);
 	}
@@ -1102,7 +1108,7 @@ gchar *remmina_protocol_widget_start_direct_tunnel(RemminaProtocolWidget *gp, gi
 	if (!server)
 		return g_strdup("");
 
-	if (strstr(g_strdup(server), "unix:///") != NULL) {
+	if (strstr(server, "unix:///") != NULL) {
 		REMMINA_DEBUG("%s is a UNIX socket", server);
 		return g_strdup(server);
 	}
@@ -1167,6 +1173,44 @@ gchar *remmina_protocol_widget_start_direct_tunnel(RemminaProtocolWidget *gp, gi
 	tunnel->destroy_func_callback_data = (gpointer)gp;
 
 	g_ptr_array_add(gp->priv->ssh_tunnels, tunnel);
+
+
+	//try startup command
+	ssh_channel channel;
+	int rc;
+	const gchar* tunnel_command = remmina_file_get_string(gp->priv->remmina_file, "ssh_tunnel_command");
+	if (tunnel_command != NULL){
+		channel = ssh_channel_new(REMMINA_SSH(tunnel)->session);
+		if (channel == NULL) return g_strdup_printf("127.0.0.1:%i", remmina_pref.sshtunnel_port);
+
+		rc = ssh_channel_open_session(channel);
+		if (rc != SSH_OK)
+		{
+			ssh_channel_free(channel);
+			return g_strdup_printf("127.0.0.1:%i", remmina_pref.sshtunnel_port);
+		}
+		rc = ssh_channel_request_exec(channel, tunnel_command);
+		if (rc != SSH_OK)
+		{
+			ssh_channel_close(channel);
+			ssh_channel_free(channel);
+			return g_strdup_printf("127.0.0.1:%i", remmina_pref.sshtunnel_port);
+		}
+		struct timeval timeout = {10, 0};
+		ssh_channel channels[2];
+		channels[0] = channel;
+		channels[1] = NULL;
+		rc = ssh_channel_select(channels, NULL, NULL, &timeout);
+		if (rc == SSH_OK){
+			char buffer[256];
+			ssh_channel_read(channel, buffer, sizeof(buffer), 0);
+		}
+		
+		REMMINA_DEBUG("Ran startup command");
+		ssh_channel_close(channel);
+		ssh_channel_free(channel);
+	}
+
 
 	return g_strdup_printf("127.0.0.1:%i", remmina_pref.sshtunnel_port);
 
@@ -1582,7 +1626,9 @@ static gboolean remmina_protocol_widget_dialog_mt_setup(gpointer user_data)
 		if (d->pflags & REMMINA_MESSAGE_PANEL_FLAG_SAVEPASSWORD)
 			remmina_message_panel_field_set_switch(mp, REMMINA_MESSAGE_PANEL_FLAG_SAVEPASSWORD, (d->default_password == NULL || d->default_password[0] == 0) ? FALSE: TRUE);
 	} else if (d->dtype == RPWDT_QUESTIONYESNO) {
-		remmina_message_panel_setup_question(mp, d->title, authpanel_mt_cb, d);
+		remmina_message_panel_setup_question(mp, d->title, authpanel_mt_cb, d, FALSE);
+	} else if (d->dtype == RPWDT_ACCEPT) {
+		remmina_message_panel_setup_question(mp, d->title, authpanel_mt_cb, d, TRUE);
 	} else if (d->dtype == RPWDT_AUTHX509) {
 		remmina_message_panel_setup_auth_x509(mp, authpanel_mt_cb, d);
 		if ((s = remmina_file_get_string(remminafile, "cacert")) != NULL)
@@ -1694,13 +1740,11 @@ static int remmina_protocol_widget_dialog(enum panel_type dtype, RemminaProtocol
 		rcbutton = mpri.response;
 	} else {
 		d->called_from_subthread = TRUE;
-		// pthread_cleanup_push(ptcleanup, (void*)d);
 		pthread_cond_init(&d->pt_cond, NULL);
 		pthread_mutex_init(&d->pt_mutex, NULL);
 		g_idle_add(remmina_protocol_widget_dialog_mt_setup, d);
 		pthread_mutex_lock(&d->pt_mutex);
 		pthread_cond_wait(&d->pt_cond, &d->pt_mutex);
-		// pthread_cleanup_pop(0);
 		pthread_mutex_destroy(&d->pt_mutex);
 		pthread_cond_destroy(&d->pt_cond);
 
@@ -1719,6 +1763,11 @@ static int remmina_protocol_widget_dialog(enum panel_type dtype, RemminaProtocol
 gint remmina_protocol_widget_panel_question_yesno(RemminaProtocolWidget *gp, const char *msg)
 {
 	return remmina_protocol_widget_dialog(RPWDT_QUESTIONYESNO, gp, 0, msg, NULL, NULL, NULL, NULL);
+}
+
+gint remmina_protocol_widget_panel_question_accept(RemminaProtocolWidget *gp, const char *msg)
+{
+	return remmina_protocol_widget_dialog(RPWDT_ACCEPT, gp, 0, msg, NULL, NULL, NULL, NULL);
 }
 
 gint remmina_protocol_widget_panel_auth(RemminaProtocolWidget *gp, RemminaMessagePanelFlags pflags,

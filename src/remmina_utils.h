@@ -44,11 +44,17 @@
 #include <gio/gio.h>
 #include <openssl/rsa.h>
 #include <openssl/evp.h>
-#include <openssl/decoder.h>
 
 #define MAX_COMPRESSED_FILE_SIZE 100000 //100kb file size max
 #define NAME_OF_DIGEST "SHA256"
 #define RSA_KEYTYPE "RSA"
+
+/* https://github.com/hboetes/mg/issues/7#issuecomment-475869095 */
+#if defined(__APPLE__) || defined(__NetBSD__)
+#define st_atim st_atimespec
+#define st_ctim st_ctimespec
+#define st_mtim st_mtimespec
+#endif
 
 extern const char *remmina_RSA_PubKey_v1;
 extern const char *remmina_RSA_PubKey_v2;
@@ -68,6 +74,7 @@ gchar *remmina_utils_get_lsb_id();
 gchar *remmina_utils_get_lsb_description();
 gchar *remmina_utils_get_lsb_release();
 gchar *remmina_utils_get_lsb_codename();
+gchar *remmina_utils_get_process_list();
 GHashTable *remmina_utils_get_etc_release();
 gchar *remmina_utils_get_dev();
 gchar *remmina_utils_get_logical();

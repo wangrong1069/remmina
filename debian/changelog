@@ -1,15 +1,37 @@
-remmina (1.4.34+dfsg-1deepin2) unstable; urgency=medium
+remmina (1.4.39+dfsg-1) unstable; urgency=medium
 
-  * chore: Update version to 1.4.34+dfsg-1deepin2
-  * fix(ui): adjust new connection window center
+  * New upstream release
 
- -- zhanghongyuan <zhanghongyuan@uniontech.com>  Thu, 12 Feb 2026 10:28:30 +0800
+ -- Matteo F. Vescovi <mfv@debian.org>  Mon, 06 Jan 2025 10:33:54 +0100
 
-remmina (1.4.34+dfsg-1deepin1) unstable; urgency=medium
+remmina (1.4.37+dfsg-1) unstable; urgency=medium
 
-  * fix(ui): center dialogs on screen when displayed
+  * New upstream release
 
- -- zhanghongyuan <zhanghongyuan@uniontech.com>  Fri, 06 Feb 2026 09:17:01 +0800
+ -- Matteo F. Vescovi <mfv@debian.org>  Sun, 29 Dec 2024 14:54:00 +0100
+
+remmina (1.4.36+dfsg-1) unstable; urgency=medium
+
+  [ Matteo F. Vescovi ]
+  * New upstream release (Closes: #1084859)
+    - debian/patches/: patchset dropped (merged upstream)
+
+  [ Patrice Duroux ]
+  * debian/watch: file updated (Closes: #1079911)
+
+ -- Matteo F. Vescovi <mfv@debian.org>  Sat, 23 Nov 2024 17:28:34 +0100
+
+remmina (1.4.35+dfsg-2) unstable; urgency=medium
+
+  * debian/: FreeRDP2 -> FreeRDP3 switch (Closes: #1070078)
+
+ -- Matteo F. Vescovi <mfv@debian.org>  Fri, 03 May 2024 21:02:04 +0200
+
+remmina (1.4.35+dfsg-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #1066917)
+
+ -- Matteo F. Vescovi <mfv@debian.org>  Fri, 15 Mar 2024 21:48:02 +0100
 
 remmina (1.4.34+dfsg-1) unstable; urgency=medium
 

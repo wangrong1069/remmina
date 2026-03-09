@@ -70,8 +70,12 @@ enum {
 };
 
 enum {
-	FLOATING_TOOLBAR_PLACEMENT_TOP		= 0,
-	FLOATING_TOOLBAR_PLACEMENT_BOTTOM	= 1
+	FLOATING_TOOLBAR_PLACEMENT_TOP			= 0,
+	FLOATING_TOOLBAR_PLACEMENT_TOP_LEFT		= 1,
+	FLOATING_TOOLBAR_PLACEMENT_TOP_RIGHT	= 2,
+	FLOATING_TOOLBAR_PLACEMENT_BOTTOM		= 3,
+	FLOATING_TOOLBAR_PLACEMENT_BOTTOM_RIGHT	= 4,
+	FLOATING_TOOLBAR_PLACEMENT_BOTTOM_LEFT	= 5
 };
 
 enum {
@@ -152,6 +156,7 @@ typedef struct _RemminaPref {
 	gboolean		fullscreen_on_auto;
 	gboolean		always_show_tab;
 	gboolean		always_show_notes;
+	gboolean		mp_left;
 	gboolean		hide_connection_toolbar;
 	gboolean		hide_searchbar;
 	gint			default_mode;
