@@ -1,3 +1,11 @@
+remmina (1.4.39+dfsg-1deepin1) unstable; urgency=medium
+
+  * fix(ui): center dialogs on screen when displayed
+  * fix(ui): adjust new connection window center
+  * feat(l10n): add Chinese desktop name
+
+ -- wangyu <wangyu@uniontech.com>  Sun, 16 Mar 2026 15:00:00 +0800
+
 remmina (1.4.39+dfsg-1) unstable; urgency=medium
 
   * New upstream release

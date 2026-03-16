@@ -1,0 +1,13 @@
+Index: remmina/data/desktop/org.remmina.Remmina.desktop.in
+===================================================================
+--- remmina.orig/data/desktop/org.remmina.Remmina.desktop.in
++++ remmina/data/desktop/org.remmina.Remmina.desktop.in
+@@ -20,7 +20,7 @@ Name[pt_PT]=Remmina
+ Name[ru]=Remmina
+ Name[tr]=Remmina
+ Name[uk]=Remmina
+-Name[zh_CN]=Remmina
++Name[zh_CN]=远程桌面客户端
+ GenericName=Remote Desktop Client
+ GenericName[ca]=Client d'escriptori remot
+ GenericName[cs]=Klient vzdálené pracovní plochy
