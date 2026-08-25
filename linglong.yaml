@@ -1,0 +1,86 @@
+# SPDX-FileCopyrightText: 2026 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+version: '1'
+
+package:
+  id: org.remmina.remmina
+  name: remmina
+  version: 1.4.39.2
+  kind: app
+  description: |
+    GTK+ Remote Desktop Client
+
+command:
+  - remmina
+
+base: org.deepin.base/25.2.2
+runtime: org.deepin.runtime.dtk/6.7.0
+
+build: |
+  # 下载和安装依赖
+  apt -y install --download-only freerdp3-dev intltool libayatana-appindicator3-dev libavahi-ui-gtk3-dev libcups2-dev \
+    libcurl4-openssl-dev libgcrypt20-dev libglib2.0-dev libgnutls28-dev libgtk-3-dev libjpeg-dev libjson-glib-dev \
+    libkf5wallet-dev libsecret-1-dev libsodium-dev libsoup-3.0-dev \
+    libspice-client-glib-2.0-dev libspice-client-gtk-3.0-dev  libspice-protocol-dev \
+    libssh-dev libssl-dev libvncserver-dev libvte-2.91-dev libwebkit2gtk-4.1-dev libxkbfile-dev python3-dev \
+    xauth lsb-release xdg-utils \
+    quilt
+  bash ./install_dep /var/cache/apt/archives "$PREFIX"
+
+  # 应用补丁
+  QUILT_DIR="$PREFIX"/share/quilt QUILT_PATCHES=debian/patches quilt push -a
+
+  # 路径的玲珑适配
+  sed -i "s|/usr|$PREFIX|g" src/remmina_utils.c
+  sed -i "s|/usr|$PREFIX|g" src/remmina_ssh.c
+
+  # 其他替换
+  sed -i "s|gnome-terminal|deepin-terminal|g" src/external_tools/launcher.sh
+
+  # 构建
+  cmake -B build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib/${TRIPLET} \
+        -DWITH_FREERDP3=ON \
+        -DWITH_KF5WALLET=ON \
+        -DWITH_KIOSK_SESSION=ON \
+        -DWITH_NEWS=ON \
+        -DWITH_TIP=ON \
+        -DWITH_STATS=ON \
+        -DWITH_X2GO=ON \
+        -DWITH_PYTHONLIBS=ON
+  cmake --build build -j`nproc`
+  cmake --build build --target install >install.log 2>&1
+
+  # 项目生成应用名和动态隐式加载的依赖库，ldd无法找到的其他库
+  LDD_FILES=(
+    remmina
+    remmina/plugins/remmina-plugin-exec.so
+    remmina/plugins/remmina-plugin-kwallet.so
+    remmina/plugins/remmina-plugin-python_wrapper.so
+    remmina/plugins/remmina-plugin-rdp.so
+    remmina/plugins/remmina-plugin-secret.so
+    remmina/plugins/remmina-plugin-spice.so
+    remmina/plugins/remmina-plugin-vnc.so
+    remmina/plugins/remmina-plugin-www.so
+    remmina/plugins/remmina-plugin-x2go.so
+    lsb_release
+    xauth
+  )
+
+  # 生成.install 文件
+  bash ./deploy_dep "${LDD_FILES[@]}"
+
+  # 安装其他二进制文件
+  ID_VALUE=$(awk -F ': ' '/^  id: / {print $2}' linglong.yaml)
+  echo $PREFIX/bin/lsb_release >> "${ID_VALUE}.install"
+  echo $PREFIX/bin/xauth >> "${ID_VALUE}.install"
+
+# allow apt download in build and do apt update
+buildext:
+  apt:
+    build_depends:
+      - libc6

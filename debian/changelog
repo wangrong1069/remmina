@@ -1,3 +1,9 @@
+remmina (1.4.39+dfsg-1deepin2) unstable; urgency=medium
+
+  * feat: Add support for packaging with Linglong
+
+ -- wangrong <wangrong@uniontech.com>  Tue, 25 Aug 2026 21:55:53 +0800
+
 remmina (1.4.39+dfsg-1deepin1) unstable; urgency=medium
 
   * fix(ui): center dialogs on screen when displayed
